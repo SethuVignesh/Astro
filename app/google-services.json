@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "44001985420",
+    "project_id": "astro-6250c"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44001985420:android:62e4104f005d2a25",
+        "android_client_info": {
+          "package_name": "com.newtra.astro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "44001985420-84bhe1m6rl99v5nb7k5gd6j2ujduioi4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.newtra.astro",
+            "certificate_hash": "0e8d8d26a9e46419e8ceba58a625b206a4e691a0"
+          }
+        },
+        {
+          "client_id": "44001985420-ktgeddvahj4v0306lshb8k5795d87p9t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXBF3Wat3G7z20GIOECcJF_2i5R2Rl9-w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

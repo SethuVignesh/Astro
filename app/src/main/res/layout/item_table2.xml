@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="100dp"
+    android:layout_height="60dp"
+    android:background="@color/colorActive"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:id="@+id/view" />
+
+    <TextView
+        android:id="@android:id/text1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CH 01"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/view"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:id="@+id/imageViewChannelicon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp"
+        android:foregroundGravity="center_vertical|center_horizontal"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/channel_logo" />
+
+    <ImageView
+        android:id="@+id/imageViewFav"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        app:srcCompat="@drawable/fav1" />
+
+</RelativeLayout>
