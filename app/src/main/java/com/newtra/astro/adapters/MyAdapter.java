@@ -88,7 +88,7 @@ public class MyAdapter extends SampleTableAdapter {
             return timeDisplay[column];
         else
             try {
-                return channelsArrayList.get(row + 1).getEventArrayList().get(column + 1).getProgrammeTitle();
+                return channelsArrayList.get(row + 1).getEventArrayList().get(column + 1).getProgrammeTitle()+"__"+channelsArrayList.get(row + 1).getChannelStbNumber();
             } catch (Exception e) {
                 return "Lorem (" + row + ", " + column + ")";
             }

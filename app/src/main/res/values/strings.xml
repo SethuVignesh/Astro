@@ -62,4 +62,5 @@
     <string name="search">Search</string>
     <string name="sort">Sort</string>
     <string name="title_activity_channel">ChannelActivity</string>
+    <string name="loading_events">Loading Events...</string>
 </resources>

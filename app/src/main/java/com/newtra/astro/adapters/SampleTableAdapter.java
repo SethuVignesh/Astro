@@ -103,6 +103,16 @@ public abstract class SampleTableAdapter extends BaseTableAdapter {
 //                    Toast.makeText(context,""+str,Toast.LENGTH_SHORT).show();
 
                 }
+//                else if(column>-1 && row>-1 ){
+//                    TextView textView = (TextView) view.findViewById(android.R.id.text1);
+//                    String str = textView.getText().toString();
+//                    String channelStbId = str.split("__")[1];
+//                    Intent intent = new Intent(context, ChannelActivity.class);
+//                    intent.putExtra("channelId", channelStbId);
+//                    context.startActivity(intent);
+//
+//                    //column ==0 1 2 3 4  row
+//                }
             }
         });
 

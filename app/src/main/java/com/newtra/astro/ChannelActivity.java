@@ -37,6 +37,7 @@ public class ChannelActivity extends AppCompatActivity {
 
             ArrayAdapter arrayAdapter = new ArrayAdapter(ChannelActivity.this, android.R.layout.simple_list_item_1, title);
             listView.setAdapter(arrayAdapter);
+
         }
     };
 
@@ -46,10 +47,12 @@ public class ChannelActivity extends AppCompatActivity {
         setContentView(R.layout.activity_channel);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Eents list");
 //        textView = (TextView) findViewById(R.id.textList);
         listView = (ListView) findViewById(R.id.list_view);
+        listView.setEmptyView(findViewById(R.id.empty));
         final String channelStbId = getIntent().getStringExtra("channelId");
-        Channels channels = ChannelListActivity.channelsArrayList.get(Integer.parseInt(channelStbId));
+        Channels channels = ChannelListActivity.channelsMap.get(Integer.parseInt(channelStbId));
 //        Toast.makeText(ChannelActivity.this,""+channelStbId,Toast.LENGTH_SHORT).show();
         String url = channels.getChannelExtRefArrayList().get(0).getValue();
         CloudRequestServices.startActionBaz(ChannelActivity.this, channels.getChannelId());

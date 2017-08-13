@@ -9,4 +9,10 @@
     <color name="blue_grey_700">#455A64</color>
     <color name="blue_grey_800">#37474F</color>
     <color name="blue_grey_900">#263238</color>
+
+    <color name="blue_grey1">#0284c6</color>
+    <color name="blue_grey2">#2d6b8b</color>
+    <color name="blue_grey3">#8dbcd4</color>
+    <color name="blue_grey4">#026193</color>
+    <color name="blue_grey5">#3e7693</color>
 </resources>

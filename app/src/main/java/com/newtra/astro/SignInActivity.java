@@ -203,10 +203,9 @@ public class SignInActivity extends AppCompatActivity implements
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
             Intent intent = new Intent(SignInActivity.this,ChannelListActivity.class);
             startActivity(intent);
-//            finish();
+            finish();
         } else {
             mStatusTextView.setText(R.string.signed_out);
-
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }

@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.newtra.astro.ChannelListActivity.myAdapter;
-
 //import static com.theatro.managersapp.activity.StoreListFragment.announcementToday;
 
 /**
@@ -83,17 +81,22 @@ public class CloudRequestServices extends IntentService {
                 if (ACTION_FOO.equals(action)) {
                     String channelsJson = getChannelList();
                     HashMap<Integer, Channels> channelsArrayList = parseChannelsJson(channelsJson);
-                    AstroUtils.saveChanneslList(channelsArrayList, mContext, true);
-                    broadcastEdit(AstroConstants.CHANNEL_LIST_UPDATED,null);
 
-//                    ArrayList<Integer> channelIds = new ArrayList<>();
-//                    ArrayList<Channels> mapValues = new ArrayList<>(channelsArrayList.values());
-//                    for (Channels channels : mapValues) {
-////                        channelIds.add(channels.getChannelId());
-//                        String eventssJson = getEventList(channels.getChannelId());
-//                        ArrayList<Event> eventArrayList = parseEventsJson(eventssJson);
+
+                    AstroUtils.saveChanneslList(channelsArrayList, mContext, true);
+
+                    ArrayList<Channels> channelsArrayList1 = new ArrayList<>(channelsArrayList.values());
+                    broadcastEdit(AstroConstants.CHANNEL_LIST_UPDATED, null, channelsArrayList1);
+
+////                    ArrayList<Integer> channelIds = new ArrayList<>();
+////                    ArrayList<Channels> mapValues = new ArrayList<>(channelsMap.values());
+////                    for (Channels channels : mapValues) {
+//////                        channelIds.add(channels.getChannelId());
+//////                        String eventssJson = getEventList(channels.getChannelId());
+//                    String eventssJson = AstroConstants.eventsJson;
+//                    ArrayList<Event> eventArrayList = parseEventsJson(eventssJson);
 ////                        AstroUtils.saveEventList(eventArrayList, mContext);
-//                        broadcastEdit(AstroConstants.EVENTS_LIST_UPDATED, eventArrayList);
+//                    broadcastEdit(AstroConstants.EVENTS_LIST_UPDATED, eventArrayList);
 //                    }
 //                    myAdapter.notifyDataSetChanged();
                 }
@@ -114,7 +117,7 @@ public class CloudRequestServices extends IntentService {
         }
     }
 
-    private void broadcastEdit(String type, ArrayList<Event> eventArrayList) {
+    private void broadcastEdit(String type, ArrayList<Event> eventArrayList, ArrayList<Channels> channelsArrayList) {
         Intent intent;
         if (type.equals(AstroConstants.CHANNEL_LIST_UPDATED)) {
             intent = new Intent(AstroConstants.CHANNEL_LIST_UPDATED);
@@ -124,6 +127,9 @@ public class CloudRequestServices extends IntentService {
         intent.setClass(mContext, ChannelListActivity.class);
         if (eventArrayList != null)
             intent.putParcelableArrayListExtra(AstroConstants.EVENTS_LIST, eventArrayList);
+        if (channelsArrayList != null)
+            intent.putParcelableArrayListExtra(AstroConstants.CHANNEL_LIST, channelsArrayList);
+
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
 
 
@@ -174,10 +180,17 @@ public class CloudRequestServices extends IntentService {
         }
     }
 
+    public static HashMap<String, ArrayList<String>> langHashMap = new HashMap<>();
+    public static HashMap<String, ArrayList<String>> categHashMap = new HashMap<>();
+
     private HashMap<Integer, Channels> parseChannelsJson(String channelsListJson) {
         HashMap<Integer, Channels> channelsArrayList = new HashMap<>();
         if (channelsListJson != null) {
             try {
+                String eventssJson = AstroConstants.eventsJson;
+                ArrayList<Event> eventArrayList = parseEventsJson(eventssJson);
+
+
                 JSONObject jsonObject = new JSONObject(channelsListJson);
                 JSONArray jsonArray = jsonObject.getJSONArray("channel");
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -185,6 +198,23 @@ public class CloudRequestServices extends IntentService {
                     int channelId = channelObject.getInt("channelId");
                     String channelTitle = channelObject.getString("channelTitle");
                     String channelStbNumber = channelObject.getString("channelStbNumber");
+                    String lang = channelObject.getString("channelLanguage");
+                    String categ = channelObject.getString("channelCategory");
+
+                    ArrayList<String> arrayList = langHashMap.get(lang);
+                    if (arrayList == null) {
+                        arrayList = new ArrayList<>();
+                        arrayList.add(channelStbNumber);
+                        langHashMap.put(lang, arrayList);
+                    } else
+                        arrayList.add(channelStbNumber);
+                    ArrayList<String> arrayList2 = categHashMap.get(categ);
+                    if (arrayList2 == null) {
+                        arrayList2 = new ArrayList<>();
+                        arrayList2.add(channelStbNumber);
+                        categHashMap.put(categ, arrayList2);
+                    } else
+                        arrayList2.add(channelStbNumber);
 
                     JSONArray channelExtRefArr = channelObject.getJSONArray("channelExtRef");
                     ArrayList<ChannelExtRef> channelExtRefArrayList = new ArrayList<>();
@@ -196,7 +226,8 @@ public class CloudRequestServices extends IntentService {
                         ChannelExtRef channelExtRef = new ChannelExtRef(system, subSystem, value);
                         channelExtRefArrayList.add(channelExtRef);
                     }
-                    Channels channels = new Channels(channelId, channelTitle, channelStbNumber, channelExtRefArrayList);
+
+                    Channels channels = new Channels(channelId, channelTitle, channelStbNumber, channelExtRefArrayList, eventArrayList);
                     channelsArrayList.put(Integer.parseInt(channelStbNumber), channels);
                 }
 

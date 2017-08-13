@@ -1,7 +1,9 @@
 package com.newtra.astro;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -13,12 +15,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -66,6 +68,8 @@ public class ChannelListActivity extends AppCompatActivity
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
+        getSupportActionBar().setTitle("Astro Guide");
+
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -75,9 +79,9 @@ public class ChannelListActivity extends AppCompatActivity
 //            }
 //        });
 
-        channelsArrayList = AstroUtils.getChannelList(ChannelListActivity.this);
-        channelsArrayList.put(0, new Channels(0, "NAME", "0", null));
-        myAdapter = new MyAdapter(this, channelsArrayList);
+        channelsMap = AstroUtils.getChannelList(ChannelListActivity.this);
+        channelsMap.put(0, new Channels(0, "NAME", "0", null, null));
+        myAdapter = new MyAdapter(this, channelsMap);
         tableFixHeaders = (TableFixHeaders) findViewById(R.id.table);
         tableFixHeaders.setAdapter(myAdapter);
         tableFixHeaders.setOnClickListener(new View.OnClickListener() {
@@ -127,86 +131,98 @@ public class ChannelListActivity extends AppCompatActivity
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
 
         BottomNavigationItem bottomNavigationItem = new BottomNavigationItem
-                ("CH number", ContextCompat.getColor(this, R.color.blue_grey_500), R.drawable.num);
+                ("Number", ContextCompat.getColor(this, R.color.blue_grey1), R.drawable.num);
         BottomNavigationItem bottomNavigationItem1 = new BottomNavigationItem
-                ("CH name", ContextCompat.getColor(this, R.color.blue_grey_600), R.drawable.name);
+                ("Name", ContextCompat.getColor(this, R.color.blue_grey2), R.drawable.name);
         BottomNavigationItem bottomNavigationItem2 = new BottomNavigationItem
-                ("Favorites", ContextCompat.getColor(this, R.color.blue_grey_700), R.drawable.fav);
+                ("Categ", ContextCompat.getColor(this, R.color.blue_grey3), R.drawable.category);
+        BottomNavigationItem bottomNavigationItem3 = new BottomNavigationItem
+                ("Lang", ContextCompat.getColor(this, R.color.blue_grey4), R.drawable.lang);
+        BottomNavigationItem bottomNavigationItem4 = new BottomNavigationItem
+                ("Fav", ContextCompat.getColor(this, R.color.blue_grey5), R.drawable.fav);
         bottomNavigationView.addTab(bottomNavigationItem);
         bottomNavigationView.addTab(bottomNavigationItem1);
         bottomNavigationView.addTab(bottomNavigationItem2);
+        bottomNavigationView.addTab(bottomNavigationItem3);
+        bottomNavigationView.addTab(bottomNavigationItem4);
+        bottomNavigationView.disableShadow();
+        bottomNavigationView.callOnClick();
         bottomNavigationView.setOnBottomNavigationItemClickListener(new OnBottomNavigationItemClickListener() {
             @Override
             public void onNavigationItemClick(int index) {
-                Toast.makeText(ChannelListActivity.this, "Item " + index + " clicked", Toast.LENGTH_SHORT).show();
-                sortData(index);
+                filterData(index);
             }
         });
 
 //        CloudRequestServices.startActionBaz(ChannelListActivity.this, channelIds);
     }
 
-    public static HashMap<Integer, Channels> channelsArrayList = new HashMap<>();
+    public static HashMap<Integer, Channels> channelsMap = new HashMap<>();
     public static ArrayList<Event> eventArrayList = new ArrayList<>();
 
     private BroadcastReceiver channelListUpdated = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            channelsArrayList = AstroUtils.getChannelList(ChannelListActivity.this);
-            channelsArrayList.put(0, new Channels(0, "NAME", "0", null));
-            myAdapter = new MyAdapter(ChannelListActivity.this, channelsArrayList);
+            channelsMap = AstroUtils.getChannelList(ChannelListActivity.this);
+            channelsMap.put(0, new Channels(0, "NAME", "0", null, null));
+            myAdapter = new MyAdapter(ChannelListActivity.this, channelsMap);
             tableFixHeaders.setAdapter(myAdapter);
-            sortData(0);
+            filterData(0);
         }
     };
-    private BroadcastReceiver eventListUpdated = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            channelsArrayList = AstroUtils.getChannelList(ChannelListActivity.this);
-            channelsArrayList.put(0, new Channels(0, "NAME", "0", null));
-            myAdapter = new MyAdapter(ChannelListActivity.this, channelsArrayList);
-            tableFixHeaders.setAdapter(myAdapter);
-
-            ArrayList<Event> eventArrayList = intent.getParcelableArrayListExtra(AstroConstants.EVENTS_LIST);
-
-            for (Event event : eventArrayList) {
-                String stbId = AstroUtils.getStbId(event.getChannelId(), ChannelListActivity.this);
-                if (stbId != null) {
-                    Channels channels = channelsArrayList.get(Integer.parseInt(stbId));
-                    if (channels != null) {
-                        ArrayList<Event> eventArrayList1 = channels.getEventArrayList();
-                        if (eventArrayList1 != null) {
-                            eventArrayList1.add(event);
-                        } else {
-                            eventArrayList1 = new ArrayList<>();
-                            eventArrayList1.add(event);
-                        }
-                    }
-                }
-
-            }
-
-
-
-
-        }
-    };
+//    private BroadcastReceiver eventListUpdated = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+////            channelsMap = AstroUtils.getChannelList(ChannelListActivity.this);
+////            channelsMap.put(0, new Channels(0, "NAME", "0", null));
+////            myAdapter = new MyAdapter(ChannelListActivity.this, channelsMap);
+////            tableFixHeaders.setAdapter(myAdapter);
+//
+//            ArrayList<Event> eventArrayList = intent.getParcelableArrayListExtra(AstroConstants.EVENTS_LIST);
+//            for(Event event:eventArrayList){
+//
+//
+//            }
+//
+//
+//            for (Event event : eventArrayList) {
+//                String stbId = AstroUtils.getStbId(event.getChannelId(), ChannelListActivity.this);
+//                if (stbId != null) {
+//                    Channels channels = channelsMap.get(Integer.parseInt(stbId));
+//                    if (channels != null) {
+//                        ArrayList<Event> eventArrayList1 = channels.getEventArrayList();
+//                        if (eventArrayList1 != null) {
+//                            eventArrayList1.add(event);
+//                        } else {
+//                            eventArrayList1 = new ArrayList<>();
+//                            eventArrayList1.add(event);
+//                        }
+//                    }
+//                }
+//
+//            }
+//
+//
+//
+//
+//        }
+//    };
 
     @Override
     protected void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(ChannelListActivity.this).registerReceiver(channelListUpdated,
                 new IntentFilter(AstroConstants.CHANNEL_LIST_UPDATED));
-        LocalBroadcastManager.getInstance(ChannelListActivity.this).registerReceiver(eventListUpdated,
-                new IntentFilter(AstroConstants.EVENTS_LIST_UPDATED));
-        sortData(0);
+//        LocalBroadcastManager.getInstance(ChannelListActivity.this).registerReceiver(eventListUpdated,
+//                new IntentFilter(AstroConstants.EVENTS_LIST_UPDATED));
+        filterData(0);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         LocalBroadcastManager.getInstance(ChannelListActivity.this).unregisterReceiver(channelListUpdated);
-        LocalBroadcastManager.getInstance(ChannelListActivity.this).unregisterReceiver(eventListUpdated);
+//        LocalBroadcastManager.getInstance(ChannelListActivity.this).unregisterReceiver(eventListUpdated);
     }
 
     @Override
@@ -236,7 +252,7 @@ public class ChannelListActivity extends AppCompatActivity
 //
 //            @Override
 //            public boolean onMenuItemClick(MenuItem item) {
-//                sortData(item.getTitle() + "");
+//                filterData(item.getTitle() + "");
 //                return true;
 //            }
 //        });
@@ -245,26 +261,35 @@ public class ChannelListActivity extends AppCompatActivity
 //
 //    }
 
-    private void sortData(int sortBy) {
+    private void filterData(int filterBy) {
         Channels channels = new Channels();
-        switch (sortBy) {
+        switch (filterBy) {
             case 0:
-                channelsArrayList.remove(0);
-                ArrayList<Channels> mapValues = new ArrayList<>(channelsArrayList.values());
+                channelsMap.remove(0);
+                ArrayList<Channels> mapValues = new ArrayList<>(channelsMap.values());
                 Collections.sort(mapValues, channels.new ChannelNumberComparator());
-                mapValues.add(0, new Channels(0, "NAME", "0", null));
+                mapValues.add(0, new Channels(0, "NAME", "0", null, null));
                 myAdapter = new MyAdapter(ChannelListActivity.this, mapValues);
                 break;
+
             case 1:
-                channelsArrayList.remove(0);
-                ArrayList<Channels> mapValues2 = new ArrayList<>(channelsArrayList.values());
+                channelsMap.remove(0);
+                ArrayList<Channels> mapValues2 = new ArrayList<>(channelsMap.values());
                 Collections.sort(mapValues2, channels.new ChannelNameComparator());
-                mapValues2.add(0, new Channels(0, "NAME", "0", null));
+                mapValues2.add(0, new Channels(0, "NAME", "0", null, null));
                 myAdapter = new MyAdapter(ChannelListActivity.this, mapValues2);
                 break;
             case 2:
-                channelsArrayList.remove(0);
-                ArrayList<Channels> mapValues3 = new ArrayList<>(channelsArrayList.values());
+                Dialog dialog = onCreateDialogSingleChoice(2);
+                dialog.show();
+                break;
+            case 3:
+                Dialog dialog2 = onCreateDialogSingleChoice(3);
+                dialog2.show();
+                break;
+            case 4:
+                channelsMap.remove(0);
+                ArrayList<Channels> mapValues3 = new ArrayList<>(channelsMap.values());
                 ArrayList<Channels> arrayList = new ArrayList<>();
                 ArrayList<String> favList = AstroUtils.getFavorites(ChannelListActivity.this);
 
@@ -273,14 +298,14 @@ public class ChannelListActivity extends AppCompatActivity
                         arrayList.add(channels1);
                     }
                 }
-                arrayList.add(0, new Channels(0, "NAME", "0", null));
+                arrayList.add(0, new Channels(0, "NAME", "0", null, null));
                 myAdapter = new MyAdapter(ChannelListActivity.this, arrayList);
 
                 break;
             default:
-                List<Channels> mapValues4 = new ArrayList<>(channelsArrayList.values());
+                List<Channels> mapValues4 = new ArrayList<>(channelsMap.values());
                 Collections.sort(mapValues4, channels.new ChannelNameComparator());
-                myAdapter = new MyAdapter(ChannelListActivity.this, channelsArrayList);
+                myAdapter = new MyAdapter(ChannelListActivity.this, channelsMap);
                 break;
         }
         tableFixHeaders.setAdapter(myAdapter);
@@ -314,6 +339,8 @@ public class ChannelListActivity extends AppCompatActivity
                     public void onResult(Status status) {
 // [START_EXCLUDE]
                         AstroUtils.removeAllFavorites(ChannelListActivity.this);
+                        Intent intent = new Intent(ChannelListActivity.this, SignInActivity.class);
+                        startActivity(intent);
                         finish();
 // [END_EXCLUDE]
                     }
@@ -324,5 +351,78 @@ public class ChannelListActivity extends AppCompatActivity
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    CharSequence[] array;
+
+    public Dialog onCreateDialogSingleChoice(final int type) {
+
+//Initialize the Alert Dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//Source of the data in the DIalog
+
+        String title = "Select Category";
+        switch (type) {
+            case 2:
+                array = CloudRequestServices.categHashMap.keySet().toArray(new CharSequence[CloudRequestServices.categHashMap.size()]);
+                title = "Select Category";
+
+                break;
+            case 3:
+                array = CloudRequestServices.langHashMap.keySet().toArray(new CharSequence[CloudRequestServices.langHashMap.size()]);
+                title = "Select Language";
+                break;
+        }
+
+        builder.setTitle(title)
+
+
+// Set the dialog title
+
+// Specify the list array, the items to be selected by default (null for none),
+// and the listener through which to receive callbacks when items are selected
+                .setItems(array, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                try {
+                                    CharSequence selectedStr = array[i];
+                                    ArrayList<String> selectedId;
+                                    if (type == 2) {
+                                        selectedId = CloudRequestServices.categHashMap.get(selectedStr.toString());
+
+                                    } else {
+                                        selectedId = CloudRequestServices.langHashMap.get(selectedStr.toString());
+
+                                    }
+                                    ArrayList<Channels> selectedChannels = new ArrayList<>();
+                                    for (String str : selectedId) {
+                                        selectedChannels.add(channelsMap.get(Integer.parseInt(str)));
+                                    }
+
+//                        ArrayList<Channels> mapValues = new ArrayList<>(channelsMap.values());
+//                        Collections.sort(mapValues, channels.new ChannelNumberComparator());
+                                    selectedChannels.add(0, new Channels(0, "NAME", "0", null, null));
+                                    myAdapter = new MyAdapter(ChannelListActivity.this, selectedChannels);
+                                    tableFixHeaders.setAdapter(myAdapter);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+//                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int id) {
+//
+//                    }
+//                })
+//                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int id) {
+//
+//                    }
+                );
+
+        return builder.create();
     }
 }

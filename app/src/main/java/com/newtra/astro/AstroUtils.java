@@ -24,6 +24,7 @@ public class AstroUtils {
     private static final String EVENT_LIST = "event_list";
     public static String PREF_FILE_NAME = "astro_pref";
 
+
     public static void addFavorites(String favChannelId, Context cxt) {
         ArrayList<String> favChannels = getFavorites(cxt);
         if (favChannels.contains(favChannelId) == false) {
@@ -84,7 +85,7 @@ public class AstroUtils {
 
     public static void saveChanneslList(HashMap<Integer, Channels> channelsArrayList, Context cxt, boolean addHeader) {
 //        if (addHeader)
-//            channelsArrayList.add(0, new Channels(0, "NAME", "0", null));
+//            channelsMap.add(0, new Channels(0, "NAME", "0", null));
         Channels channels = new Channels();
         ArrayList<Channels> mapValues = new ArrayList<>(channelsArrayList.values());
         Collections.sort(mapValues, channels.new ChannelNumberComparator());

@@ -1,5 +1,8 @@
 package com.newtra.astro.BeanObjects;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -7,7 +10,7 @@ import java.util.Comparator;
  * Created by Sethu on 8/8/17.
  */
 
-public class Channels {
+public class Channels implements Parcelable {
     int channelId;
     String siChannelId;
     String channelTitle;
@@ -26,6 +29,26 @@ public class Channels {
     ArrayList<LinearOttMapping> linearOttMappingArrayList;
     boolean isFavorite;
     ArrayList<Event> eventArrayList;
+
+    protected Channels(Parcel in) {
+        channelId = in.readInt();
+        channelTitle = in.readString();
+        channelStbNumber = in.readString();
+        channelExtRefArrayList = in.createTypedArrayList(ChannelExtRef.CREATOR);
+        eventArrayList = in.createTypedArrayList(Event.CREATOR);
+    }
+
+    public static final Creator<Channels> CREATOR = new Creator<Channels>() {
+        @Override
+        public Channels createFromParcel(Parcel in) {
+            return new Channels(in);
+        }
+
+        @Override
+        public Channels[] newArray(int size) {
+            return new Channels[size];
+        }
+    };
 
     public ArrayList<Event> getEventArrayList() {
         return eventArrayList;
@@ -48,11 +71,23 @@ public class Channels {
     }
 
 
-    public Channels(int channelId, String channelTitle, String channelStbNumber, ArrayList<ChannelExtRef> channelExtRefArrayList) {
+    public Channels(int channelId, String channelTitle, String channelStbNumber, ArrayList<ChannelExtRef> channelExtRefArrayList, ArrayList<Event> eventArrayList) {
         this.channelId = channelId;
         this.channelTitle = channelTitle;
         this.channelStbNumber = channelStbNumber;
         this.channelExtRefArrayList = channelExtRefArrayList;
+        this.eventArrayList = eventArrayList;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(channelId);
+        parcel.writeString(channelTitle);
+        parcel.writeString(channelStbNumber);
+        parcel.writeTypedList(channelExtRefArrayList);
+        parcel.writeTypedList(eventArrayList);
+
+
     }
 
     public int getChannelId() {
@@ -182,6 +217,11 @@ public class Channels {
 
     public void setLinearOttMappingArrayList(ArrayList<LinearOttMapping> linearOttMappingArrayList) {
         this.linearOttMappingArrayList = linearOttMappingArrayList;
+    }
+
+    @Override
+    public int describeContents() {
+        return hashCode();
     }
 
 
