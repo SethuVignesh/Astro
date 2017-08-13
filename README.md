@@ -38,6 +38,6 @@ Can install directly in Android OS running 4.3+.
  In the main Channel selection screen, constant string value is used as a event list sample json data.
 
  ### Libraries used
-com.github.armcha:LuseenBottomNavigation:1.8.2 for navigation
-devs.mulham.horizontalcalendar:horizontalcalendar:1.1.7 for Date selection
-com.squareup.picasso:picasso:2.5.2 for image loading
+com.github.armcha:LuseenBottomNavigation:1.8.2 for navigation,
+devs.mulham.horizontalcalendar:horizontalcalendar:1.1.7 for Date selection,
+com.squareup.picasso:picasso:2.5.2 for image loading.
